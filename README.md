@@ -1,5 +1,8 @@
 De Agostini weather station data reader
 
+![image](https://user-images.githubusercontent.com/15829877/130367641-15b14f5a-2320-4fe8-8570-8837af5f9190.png)
+
+
 Simple C program to read from the usb HID interface of the control unit.
 
 Credits to Folly from MeteoNetwork forum for the original code (2011), I refactored, cleaned up and fixed some stuff.
