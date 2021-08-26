@@ -152,16 +152,13 @@ static void decodeTemp(unsigned char *ptr) {
     humidity[2] = (float) Humidity_cal((double) y);
     y = (ptr[11] << 4) | ((ptr[10] & 240) >> 4);
     temp[2] = (float) Temperature_cal(y);
-    // external temp can be channel 1, 2 or 3. find the most reasonable one
-    int i;
-    float real_external_temp = 150;
-    float real_external_humidity = 150;
-    for (i = 1; i < 4; i = i + 1) {
-        if (temp[i] < real_external_temp)
-            real_external_temp = temp[i];
-        if ((humidity[i] < real_external_humidity) && humidity[i] > 0)
-            real_external_humidity = humidity[i];
-    }
+    // use channel 3 as backup for channel 1
+    float real_external_temp = temp[1];
+    float real_external_humidity = humidity[1];
+    if (real_external_temp > 120)
+        real_external_temp = temp[3];
+    if (real_external_humidity > 120)
+        real_external_humidity = humidity[3];
     char *datetime = (char *) malloc(20 * sizeof(char));
     get_time_string(datetime);
     FILE *internal_temp = fopen("internal_temp.csv", "a");
