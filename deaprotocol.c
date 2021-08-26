@@ -152,6 +152,16 @@ static void decodeTemp(unsigned char *ptr) {
     humidity[2] = (float) Humidity_cal((double) y);
     y = (ptr[11] << 4) | ((ptr[10] & 240) >> 4);
     temp[2] = (float) Temperature_cal(y);
+    // external temp can be channel 1, 2 or 3. find the most reasonable one
+    int i;
+    float real_external_temp = 150;
+    float real_external_humidity = 150;
+    for (i = 1; i < 4; i = i + 1) {
+        if (temp[i] < real_external_temp)
+            real_external_temp = temp[i];
+        if ((humidity[i] < real_external_humidity) && humidity[i] > 0)
+            real_external_humidity = humidity[i];
+    }
     char *datetime = (char *) malloc(20 * sizeof(char));
     get_time_string(datetime);
     FILE *internal_temp = fopen("internal_temp.csv", "a");
@@ -159,7 +169,7 @@ static void decodeTemp(unsigned char *ptr) {
     fclose(internal_temp);
     FILE *external_temp = fopen("external_temp.csv", "a");
     //deaWork.dataRXMask |= 1 << (8+sensor);
-    fprintf(external_temp, "%s, %1.1f, %2.0f,\n", datetime, temp[1], humidity[1]);
+    fprintf(external_temp, "%s, %1.1f, %2.0f,\n", datetime, real_external_temp, real_external_humidity);
     fclose(external_temp);
     for (sensor = 0; sensor < 4; sensor++) {
         printf(
@@ -218,8 +228,8 @@ static int readStationData(struct usb_dev_handle *devh) {
       Invio del comando per ottenere i dati RealTime
     */
     usb_control_msg(devh,
-                          USB_TYPE_CLASS + USB_RECIP_INTERFACE,
-                          0x09, 0x0200, 0x00, write_packet, 0x08, DEA_USB_TIMEOUT);
+                    USB_TYPE_CLASS + USB_RECIP_INTERFACE,
+                    0x09, 0x0200, 0x00, write_packet, 0x08, DEA_USB_TIMEOUT);
     // if (ifWorkData->stationExtLog == 2) printf("dea: Command Response: %d\n", ret);
     usleep(500000);
 
