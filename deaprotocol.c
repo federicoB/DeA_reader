@@ -164,10 +164,12 @@ static void decodeTemp(unsigned char *ptr) {
     FILE *internal_temp = fopen("internal_temp.csv", "a");
     fprintf(internal_temp, "%s, %1.1f, %2.0f,\n", datetime, temp[0], humidity[0]);
     fclose(internal_temp);
-    FILE *external_temp = fopen("external_temp.csv", "a");
-    //deaWork.dataRXMask |= 1 << (8+sensor);
-    fprintf(external_temp, "%s, %1.1f, %2.0f,\n", datetime, real_external_temp, real_external_humidity);
-    fclose(external_temp);
+    // when control-unit sensor connection is interrupted, temp is over 100
+    if (real_external_temp < 100) {
+        FILE *external_temp = fopen("external_temp.csv", "a");
+        fprintf(external_temp, "%s, %1.1f, %2.0f,\n", datetime, real_external_temp, real_external_humidity);
+        fclose(external_temp);
+    }
     for (sensor = 0; sensor < 4; sensor++) {
         printf(
                 "dea: temp sensor %02d  temperature %1.1f  humidity %2.0f \n",
@@ -389,7 +391,7 @@ int deaReadData(struct usb_dev_handle *devh) {
     // è superato
     while (ret == ERROR) {
         // attendo un secondo
-        usleep(1000000);
+        sleep(1);
         // e provo a leggere
         ret = readStationData(devh);
         if (time(0) > timeout) {
