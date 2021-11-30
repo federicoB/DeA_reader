@@ -80,7 +80,7 @@ void get_time_string(char *datetime) {
 
     time(&rawtime);
     timeinfo = localtime(&rawtime);
-    strftime(datetime, 20, "%d/%m/%Y %H:%M:%S", timeinfo);
+    strftime(datetime, 20, "%Y-%m-%d %H:%M:%S", timeinfo);
 
 }
 
