@@ -13,7 +13,7 @@ The program must be run as superuser, it generates 5 csv for each sensor.
 
 To check and install all dependencies:
 ```
-sudo apt-get install build-essential cmake libusb-dev libusb-1.0-0 libusb-1.0-0-dev
+sudo apt-get install radlib-dev build-essential cmake libusb-dev libusb-1.0-0 libusb-1.0-0-dev
 ```
 
 

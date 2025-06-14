@@ -1,0 +1,9 @@
+services:
+  dea_reader:
+    build: .
+    image: dea_reader:latest
+    container_name: dea_reader
+    privileged: true
+    devices:
+      - "/dev/bus/usb:/dev/bus/usb"
+    restart: unless-stopped
