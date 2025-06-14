@@ -4,10 +4,7 @@ RUN apt-get update && \
     apt-get install -y radlib-dev build-essential cmake libusb-dev libusb-1.0-0 libusb-1.0-0-dev && \
     apt-get clean
 
-# Optional: add non-root user
-RUN useradd -ms /bin/bash builder && adduser builder sudo
-USER builder
-WORKDIR /home/builder
+WORKDIR /app
 
 # Copy source files
 COPY CMakeLists.txt deaprotocol.c deaprotocol.h hidapi.h \

@@ -6,4 +6,6 @@ services:
     privileged: true
     devices:
       - "/dev/bus/usb:/dev/bus/usb"
+    volumes:
+      - .:/app  # map host current dir to /app in container
     restart: unless-stopped
