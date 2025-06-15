@@ -4,8 +4,10 @@ services:
     image: dea_reader:latest
     container_name: dea_reader
     privileged: true
+    environment:
+      - DATA_FOLDER=data
     devices:
       - "/dev/bus/usb:/dev/bus/usb"
     volumes:
-      - .:/app  # map host current dir to /app in container
+      - ./data:/app/data  # map host current dir to /app in container
     restart: unless-stopped

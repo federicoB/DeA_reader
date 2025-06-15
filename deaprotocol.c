@@ -123,6 +123,22 @@ static void decodeWind(unsigned char *ptr) {
 
 }
 
+char *build_data_filepath(const char *filename) {
+    const char *folder = getenv("DATA_FOLDER");
+    size_t len = (folder ? strlen(folder) + 1 : 0) + strlen(filename) + 1;
+
+    char *filepath = malloc(len);
+    if (!filepath) return NULL;
+
+    if (folder) {
+        snprintf(filepath, len, "%s/%s", folder, filename);
+    } else {
+        snprintf(filepath, len, "%s", filename);
+    }
+
+    return filepath;
+}
+
 static void decodeTemp(unsigned char *ptr) {
     // la temperatura fornita è in gradi celsius
     // e viene convertita in farheneit
@@ -161,12 +177,16 @@ static void decodeTemp(unsigned char *ptr) {
         real_external_humidity = humidity[3];
     char *datetime = (char *) malloc(20 * sizeof(char));
     get_time_string(datetime);
-    FILE *internal_temp = fopen("internal_temp.csv", "a");
+    char *path = build_data_filepath("internal_temp.csv");
+    FILE *internal_temp = fopen(path, "a");
+    free(path);
     fprintf(internal_temp, "%s, %1.1f, %2.0f\n", datetime, temp[0], humidity[0]);
     fclose(internal_temp);
     // when control-unit sensor connection is interrupted, temp is over 100
     if (real_external_temp < 100) {
-        FILE *external_temp = fopen("external_temp.csv", "a");
+        char *path = build_data_filepath("external_temp.csv");
+        FILE *external_temp = fopen(path, "a");
+        free(path);
         fprintf(external_temp, "%s, %1.1f, %2.0f\n", datetime, real_external_temp, real_external_humidity);
         fclose(external_temp);
     }
@@ -190,7 +210,9 @@ static void decodePres(unsigned char *ptr) {
     //deaWork.dataRXMask |= WMR200_SENSOR_PRESSURE;
     char *datetime = (char *) malloc(20 * sizeof(char));
     get_time_string(datetime);
-    FILE *pressure_file = fopen("pressure.csv", "a");
+    char *path = build_data_filepath("pressure.csv");
+    FILE *pressure_file = fopen(path, "a");
+    free(path);
     fprintf(pressure_file, "%s, %2.2f\n", datetime, pressure);
     fclose(pressure_file);
     printf("dea: barometric pressure %2.2f inHg\n", pressure);
